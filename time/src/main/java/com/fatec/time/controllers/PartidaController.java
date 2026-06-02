@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fatec.time.dtos.PartidaResponse;
 import com.fatec.time.entities.Partida;
 import com.fatec.time.services.PartidaService;
 
@@ -19,7 +20,7 @@ public class PartidaController {
     private PartidaService service;
 
     @GetMapping
-    public ResponseEntity<List<Partida>> getAll() {
+    public ResponseEntity<List<PartidaResponse>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 

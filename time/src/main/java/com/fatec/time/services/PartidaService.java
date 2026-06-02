@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fatec.time.dtos.PartidaResponse;
 import com.fatec.time.entities.Partida;
 import com.fatec.time.repositories.PartidaRepository;
 
@@ -16,7 +17,7 @@ public class PartidaService {
     @Autowired
     private PartidaRepository repository;
 
-    public List<Partida> findAll() {
+    public List<PartidaResponse> findAll() {
         return repository.findAll();
     }
 

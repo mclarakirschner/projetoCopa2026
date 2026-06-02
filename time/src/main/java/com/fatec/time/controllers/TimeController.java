@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.fatec.time.dtos.TimeResponse;
 import com.fatec.time.entities.Time;
 import com.fatec.time.services.TimeService;
 
@@ -19,7 +20,7 @@ public class TimeController {
     private TimeService service;
 
     @GetMapping
-    public ResponseEntity<List<Time>> getAll() {
+    public ResponseEntity<List<TimeResponse>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 

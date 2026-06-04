@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fatec.time.dtos.TimeResponse;
-import com.fatec.time.entities.Time;
 import com.fatec.time.services.TimeService;
 
 @RestController
@@ -25,7 +24,7 @@ public class TimeController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Time> getById(@PathVariable Long id) {
+    public ResponseEntity<TimeResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
@@ -36,13 +35,14 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<Time> save(@RequestBody Time time) {
-        Time p = service.save(time);
+    public ResponseEntity<TimeResponse> save(@RequestBody TimeRequest request) {
+
+        TimeResponse p = service.save(request);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(p.getId())
+                .buildAndExpand(p.id())
                 .toUri();
 
         return ResponseEntity.created(location).body(p);
@@ -51,8 +51,8 @@ public class TimeController {
 
     @PutMapping("{id}")
     public ResponseEntity<Void> update(@PathVariable long id,
-            @RequestBody Time product) {
-        service.update(product, id);
+            @RequestBody TimeRequest request) {
+        service.update(request, id);
         return ResponseEntity.noContent().build();
     }
 

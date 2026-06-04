@@ -25,7 +25,7 @@ public class PartidaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Partida> getById(@PathVariable Long id) {
+    public ResponseEntity<PartidaResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
@@ -37,14 +37,14 @@ public class PartidaController {
     }
 
     @PostMapping
-    public ResponseEntity<Partida> save(@RequestBody Partida partida) {
+    public ResponseEntity<PartidaResponse> save(@RequestBody PartidaRequest request) {
 
-        Partida p = service.save(partida);
+        PartidaResponse p = service.save(request);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
-                .buildAndExpand(p.getId())
+                .buildAndExpand(p.id())
                 .toUri();
 
         return ResponseEntity.created(location).body(p);
@@ -52,7 +52,7 @@ public class PartidaController {
 
     @PutMapping("{id}")
     public ResponseEntity<Void> update(@PathVariable long id,
-            @RequestBody Partida partida) {
+            @RequestBody PartidaRequest partida) {
 
         service.update(partida, id);
         return ResponseEntity.noContent().build();

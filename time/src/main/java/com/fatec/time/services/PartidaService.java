@@ -5,8 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fatec.time.dtos.PartidaRequest;
 import com.fatec.time.dtos.PartidaResponse;
-import com.fatec.time.entities.Partida;
+import com.fatec.time.mappers.PartidaMapper;
 import com.fatec.time.repositories.PartidaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -18,39 +19,41 @@ public class PartidaService {
     private PartidaRepository repository;
 
     public List<PartidaResponse> findAll() {
-        return repository.findAll();
+        return repository.findAll()
+                .stream()
+                .map(PartidaMapper::toDTO)
+                .toList();
     }
 
-    public Partida findById(Long id) {
+    public PartidaResponse findById(Long id) {
         return repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Partida não encontrada"));
+                .map(PartidaMapper::toDTO)
+                .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
     }
-
-    // add delete create e update
 
     public void deleteById(Long id) {
-        if (repository.existsById(id)) {
+        if (repository.existsById(id))
             repository.deleteById(id);
-        } else {
+        else
             throw new EntityNotFoundException("Partida não cadastrada");
-        }
     }
 
-    public Partida save(Partida partida) {
-        return repository.save(partida);
+    public PartidaResponse save(PartidaRequest partida) {
+
+        Partida p = repository.save(PartidaMapper.toEntity(partida));
+        return PartidaMapper.toDTO(p);
     }
 
-    public void update(Partida partida, Long id) {
+    public void update(PartidaRequest partida, Long id) {
 
         Partida p = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
 
-        p.setTimeCasa(partida.getTimeCasa());
-        p.setTimeVisitante(partida.getTimeVisitante());
-        p.setGolsCasa(partida.getGolsCasa());
-        p.setGolsVisitante(partida.getGolsVisitante());
+        p.setTimeCasa(partida.timeCasa());
+        p.setTimeVisitante(partida.timeVisitante());
+        p.setGolsCasa(partida.golsCasa());
+        p.setGolsVisitante(partida.golsVisitante());
 
         repository.save(p);
     }
-
 }

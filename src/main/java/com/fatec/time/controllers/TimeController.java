@@ -12,6 +12,8 @@ import com.fatec.time.dtos.TimeResponse;
 import com.fatec.time.dtos.TimeRequest;
 import com.fatec.time.services.TimeService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/times")
 public class TimeController {
@@ -36,7 +38,7 @@ public class TimeController {
     }
 
     @PostMapping
-    public ResponseEntity<TimeResponse> save(@RequestBody TimeRequest request) {
+    public ResponseEntity<TimeResponse> save(@Valid @RequestBody TimeRequest request) {
 
         TimeResponse p = service.save(request);
 
@@ -52,7 +54,7 @@ public class TimeController {
 
     @PutMapping("{id}")
     public ResponseEntity<Void> update(@PathVariable long id,
-            @RequestBody TimeRequest request) {
+            @Valid @RequestBody TimeRequest request) {
         service.update(request, id);
         return ResponseEntity.noContent().build();
     }

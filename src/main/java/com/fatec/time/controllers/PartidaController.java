@@ -12,6 +12,8 @@ import com.fatec.time.dtos.PartidaResponse;
 import com.fatec.time.dtos.PartidaRequest;
 import com.fatec.time.services.PartidaService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/partidas")
 public class PartidaController {
@@ -37,7 +39,7 @@ public class PartidaController {
     }
 
     @PostMapping
-    public ResponseEntity<PartidaResponse> save(@RequestBody PartidaRequest request) {
+    public ResponseEntity<PartidaResponse> save(@Valid @RequestBody PartidaRequest request) {
 
         PartidaResponse p = service.save(request);
 
@@ -52,7 +54,7 @@ public class PartidaController {
 
     @PutMapping("{id}")
     public ResponseEntity<Void> update(@PathVariable long id,
-            @RequestBody PartidaRequest partida) {
+            @Valid @RequestBody PartidaRequest partida) {
 
         service.update(partida, id);
         return ResponseEntity.noContent().build();

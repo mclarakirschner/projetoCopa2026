@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fatec.time.dtos.TimeResponse;
+import com.fatec.time.entities.Time;
 import com.fatec.time.dtos.TimeRequest;
 import com.fatec.time.services.TimeService;
 
@@ -16,6 +17,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/times")
+@CrossOrigin(origins = "*")
 public class TimeController {
 
     @Autowired
@@ -29,6 +31,11 @@ public class TimeController {
     @GetMapping("/{id}")
     public ResponseEntity<TimeResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
+    }
+
+    @GetMapping("/ranking")
+    public List<Time> ranking() {
+        return service.ranking();
     }
 
     @DeleteMapping("{id}")

@@ -14,6 +14,7 @@ import com.fatec.time.services.PartidaService;
 
 import jakarta.validation.Valid;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/partidas")
 public class PartidaController {

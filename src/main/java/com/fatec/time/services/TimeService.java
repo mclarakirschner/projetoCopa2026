@@ -56,4 +56,8 @@ public class TimeService {
 
         repository.save(t);
     }
+
+    public List<Time> ranking() {
+        return repository.findAllByOrderByPontosDesc();
+    }
 }

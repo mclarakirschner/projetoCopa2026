@@ -3,28 +3,32 @@ package com.fatec.time.mappers;
 import com.fatec.time.dtos.PartidaResponse;
 import com.fatec.time.dtos.PartidaRequest;
 import com.fatec.time.entities.Partida;
+import com.fatec.time.entities.Time;
 
 public class PartidaMapper {
 
-    public static Partida toEntity(PartidaRequest request) {
+    public static Partida toEntity(PartidaRequest request, Time casa, Time visitante) {
 
         Partida p = new Partida();
 
-        p.setTimeCasa(request.timeCasa());
-        p.setTimeVisitante(request.timeVisitante());
+        p.setTimeCasa(casa);
+        p.setTimeVisitante(visitante);
         p.setGolsCasa(request.golsCasa());
         p.setGolsVisitante(request.golsVisitante());
 
         return p;
     }
 
-    public static PartidaResponse toDTO(Partida partida) {
+    public static PartidaResponse toDTO(Partida p) {
 
         return new PartidaResponse(
-                partida.getId(),
-                partida.getTimeCasa(),
-                partida.getTimeVisitante(),
-                partida.getGolsCasa(),
-                partida.getGolsVisitante());
+                p.getId(),
+                p.getTimeCasa().getId(),
+                p.getTimeCasa().getNome(),
+                p.getTimeVisitante().getId(),
+                p.getTimeVisitante().getNome(),
+                p.getGolsCasa(),
+                p.getGolsVisitante()
+        );
     }
 }

@@ -18,72 +18,112 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class PartidaService {
 
-    @Autowired
-    private PartidaRepository repository;
-    @Autowired
-    private TimeRepository timeRepository;
+        @Autowired
+        private PartidaRepository repository;
 
-    public List<PartidaResponse> findAll() {
-        return repository.findAll()
-                .stream()
-                .map(PartidaMapper::toDTO)
-                .toList();
-    }
+        @Autowired
+        private TimeRepository timeRepository;
 
-    public PartidaResponse findById(Long id) {
-        return repository.findById(id)
-                .map(PartidaMapper::toDTO)
-                .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
-    }
-
-    public void deleteById(Long id) {
-        if (repository.existsById(id))
-            repository.deleteById(id);
-        else
-            throw new EntityNotFoundException("Partida não cadastrada");
-    }
-
-    public PartidaResponse save(PartidaRequest partida) {
-
-        Partida p = PartidaMapper.toEntity(partida);
-
-        // buscar times
-        Time casa = timeRepository.findByNome(partida.timeCasa());
-        Time fora = timeRepository.findByNome(partida.timeVisitante());
-
-        int golsCasa = partida.golsCasa();
-        int golsFora = partida.golsVisitante();
-
-        // lógica de pontos
-        if (golsCasa > golsFora) {
-            casa.setPontos(casa.getPontos() + 3);
-        } else if (golsCasa < golsFora) {
-            fora.setPontos(fora.getPontos() + 3);
-        } else {
-            casa.setPontos(casa.getPontos() + 1);
-            fora.setPontos(fora.getPontos() + 1);
+        public List<PartidaResponse> findAll() {
+                return repository.findAll()
+                                .stream()
+                                .map(PartidaMapper::toDTO)
+                                .toList();
         }
 
-        // salvar times atualizados
-        timeRepository.save(casa);
-        timeRepository.save(fora);
+        public PartidaResponse findById(Long id) {
 
-        // salvar partida
-        Partida saved = repository.save(p);
+                Partida p = repository.findById(id)
+                                .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
 
-        return PartidaMapper.toDTO(saved);
-    }
+                return new PartidaResponse(
+                                p.getId(),
+                                p.getTimeCasa().getId(),
+                                p.getTimeCasa().getNome(),
+                                p.getTimeVisitante().getId(),
+                                p.getTimeVisitante().getNome(),
+                                p.getGolsCasa(),
+                                p.getGolsVisitante());
+        }
 
-    public void update(PartidaRequest partida, Long id) {
+        public void deleteById(Long id) {
 
-        Partida p = repository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
+                if (!repository.existsById(id)) {
+                        throw new EntityNotFoundException("Partida não cadastrada");
+                }
 
-        p.setTimeCasa(partida.timeCasa());
-        p.setTimeVisitante(partida.timeVisitante());
-        p.setGolsCasa(partida.golsCasa());
-        p.setGolsVisitante(partida.golsVisitante());
+                repository.deleteById(id);
 
-        repository.save(p);
-    }
+                recalcularRanking();
+        }
+
+        public PartidaResponse save(PartidaRequest request) {
+
+                Time casa = timeRepository.findById(request.timeCasaId())
+                                .orElseThrow();
+
+                Time visitante = timeRepository.findById(request.timeVisitanteId())
+                                .orElseThrow();
+
+                Partida p = PartidaMapper.toEntity(request, casa, visitante);
+
+                Partida salva = repository.save(p);
+
+                recalcularRanking();
+
+                return PartidaMapper.toDTO(salva);
+        }
+
+        public PartidaResponse update(Long id, PartidaRequest request) {
+
+                Partida p = repository.findById(id)
+                                .orElseThrow();
+
+                Time casa = timeRepository.findById(request.timeCasaId())
+                                .orElseThrow();
+
+                Time visitante = timeRepository.findById(request.timeVisitanteId())
+                                .orElseThrow();
+
+                p.setTimeCasa(casa);
+                p.setTimeVisitante(visitante);
+                p.setGolsCasa(request.golsCasa());
+                p.setGolsVisitante(request.golsVisitante());
+
+                Partida salva = repository.save(p);
+
+                recalcularRanking();
+
+                return PartidaMapper.toDTO(salva);
+        }
+
+        private void recalcularRanking() {
+
+                List<Time> times = timeRepository.findAll();
+
+                // zera pontos
+                for (Time t : times) {
+                        t.setPontos(0);
+                }
+
+                List<Partida> partidas = repository.findAll();
+
+                for (Partida p : partidas) {
+
+                        Time casa = p.getTimeCasa();
+                        Time visitante = p.getTimeVisitante();
+
+                        if (p.getGolsCasa() > p.getGolsVisitante()) {
+                                casa.setPontos(casa.getPontos() + 3);
+                        } else if (p.getGolsCasa() < p.getGolsVisitante()) {
+                                visitante.setPontos(visitante.getPontos() + 3);
+                        } else {
+                                casa.setPontos(casa.getPontos() + 1);
+                                visitante.setPontos(visitante.getPontos() + 1);
+                        }
+                }
+
+                timeRepository.saveAll(times);
+                timeRepository.flush();
+        }
 }

@@ -54,10 +54,12 @@ public class PartidaController {
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Void> update(@PathVariable long id,
+    public ResponseEntity<PartidaResponse> update(
+            @PathVariable Long id,
             @Valid @RequestBody PartidaRequest partida) {
 
-        service.update(partida, id);
-        return ResponseEntity.noContent().build();
+        PartidaResponse response = service.update(id, partida);
+
+        return ResponseEntity.ok(response);
     }
 }

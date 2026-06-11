@@ -1,11 +1,15 @@
 package com.fatec.time.dtos;
 
 public record PartidaResponse(
+
         Long id,
-        String timeCasa,
-        String timeVisitante,
+
+        Long timeCasaId,
+        String timeCasaNome,
+
+        Long timeVisitanteId,
+        String timeVisitanteNome,
+
         Integer golsCasa,
         Integer golsVisitante
-
-) {
-}
+) {}

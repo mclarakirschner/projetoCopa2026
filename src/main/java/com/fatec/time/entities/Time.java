@@ -7,8 +7,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "TBL_TIME")
-
+@Table(name = "TBL_TIME") // criando tabela de time
 public class Time implements java.io.Serializable {
 
     @Id

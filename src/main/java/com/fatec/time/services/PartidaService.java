@@ -24,14 +24,14 @@ public class PartidaService {
         @Autowired
         private TimeRepository timeRepository;
 
-        public List<PartidaResponse> findAll() {
+        public List<PartidaResponse> findAll() { // Busca todas as partidas cadastradas.
                 return repository.findAll()
                                 .stream()
                                 .map(PartidaMapper::toDTO)
                                 .toList();
         }
 
-        public PartidaResponse findById(Long id) {
+        public PartidaResponse findById(Long id) { // Busca uma partida pelo id.
 
                 Partida p = repository.findById(id)
                                 .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
@@ -46,7 +46,7 @@ public class PartidaService {
                                 p.getGolsVisitante());
         }
 
-        public void deleteById(Long id) {
+        public void deleteById(Long id) { // Deleta uma partida pelo id.
 
                 if (!repository.existsById(id)) {
                         throw new EntityNotFoundException("Partida não cadastrada");
@@ -57,13 +57,18 @@ public class PartidaService {
                 recalcularRanking();
         }
 
-        public PartidaResponse save(PartidaRequest request) {
+        public PartidaResponse save(PartidaRequest request) { // Salva uma partida.
 
                 Time casa = timeRepository.findById(request.timeCasaId())
-                                .orElseThrow();
+                                .orElseThrow(() -> new EntityNotFoundException("Time da casa não encontrado"));
 
                 Time visitante = timeRepository.findById(request.timeVisitanteId())
-                                .orElseThrow();
+                                .orElseThrow(() -> new EntityNotFoundException("Time visitante não encontrado"));
+
+                if (casa.getId().equals(visitante.getId())) {
+                        throw new IllegalArgumentException(
+                                        "O time da casa não pode ser igual ao time visitante");
+                }
 
                 Partida p = PartidaMapper.toEntity(request, casa, visitante);
 
@@ -74,16 +79,16 @@ public class PartidaService {
                 return PartidaMapper.toDTO(salva);
         }
 
-        public PartidaResponse update(Long id, PartidaRequest request) {
+        public PartidaResponse update(Long id, PartidaRequest request) { // Atualiza uma partida.
 
                 Partida p = repository.findById(id)
-                                .orElseThrow();
+                                .orElseThrow(() -> new EntityNotFoundException("Partida não cadastrada"));
 
                 Time casa = timeRepository.findById(request.timeCasaId())
-                                .orElseThrow();
+                                .orElseThrow(() -> new EntityNotFoundException("Time da casa não encontrado"));
 
                 Time visitante = timeRepository.findById(request.timeVisitanteId())
-                                .orElseThrow();
+                                .orElseThrow(() -> new EntityNotFoundException("Time visitante não encontrado"));
 
                 p.setTimeCasa(casa);
                 p.setTimeVisitante(visitante);
@@ -97,7 +102,7 @@ public class PartidaService {
                 return PartidaMapper.toDTO(salva);
         }
 
-        private void recalcularRanking() {
+        private void recalcularRanking() { // Recalcula o ranking.
 
                 List<Time> times = timeRepository.findAll();
 

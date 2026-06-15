@@ -19,45 +19,44 @@ public class TimeService {
     @Autowired
     private TimeRepository repository;
 
-    public List<TimeResponse> findAll() {
+    public List<TimeResponse> findAll() { // Busca todos os times cadastrados.
         return repository.findAll()
                 .stream()
                 .map(TimeMapper::toDTO)
                 .toList();
     }
 
-    public TimeResponse findById(Long id) {
+    public TimeResponse findById(Long id) { // Busca um time pelo id.
         return repository.findById(id)
                 .map(TimeMapper::toDTO)
                 .orElseThrow(() -> new EntityNotFoundException("Time não cadastrado"));
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(Long id) { // Deleta um time pelo id.
         if (repository.existsById(id))
             repository.deleteById(id);
         else
             throw new EntityNotFoundException("Time não cadastrado");
     }
 
-    public TimeResponse save(TimeRequest time) {
+    public TimeResponse save(TimeRequest time) { // Salva um time.
 
         Time t = repository.save(TimeMapper.toEntity(time));
         return TimeMapper.toDTO(t);
     }
 
-    public void update(TimeRequest time, Long id) {
+    public void update(TimeRequest time, Long id) { // Atualiza um time.
 
         Time t = repository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Time não cadastrado"));
 
         t.setNome(time.nome());
         t.setGrupo(time.grupo());
-        t.setPontos(time.pontos());
 
         repository.save(t);
     }
 
-    public List<Time> ranking() {
+    public List<Time> ranking() { // Retorna a lista de times ordenada por pontos.
         return repository.findAllByOrderByPontosDesc();
     }
 }

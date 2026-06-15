@@ -10,5 +10,5 @@ public interface TimeRepository extends JpaRepository<Time, Long> {
 
     Time findByNome(String nome);
 
-    List<Time> findAllByOrderByPontosDesc(); // lista em ordem decrescente
+    List<Time> findAllByOrderByPontosDesc();
 }

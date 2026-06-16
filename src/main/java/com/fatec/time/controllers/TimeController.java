@@ -15,6 +15,7 @@ import com.fatec.time.services.TimeService;
 
 import jakarta.validation.Valid;
 
+// metodos http
 @RestController
 @RequestMapping("/times")
 @CrossOrigin(origins = "*")

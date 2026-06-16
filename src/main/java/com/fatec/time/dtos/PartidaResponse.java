@@ -1,15 +1,15 @@
 package com.fatec.time.dtos;
 
-public record PartidaResponse(
+public record PartidaResponse( // envia dados para frontend quando é utilizado métodos http
 
-        Long id,
+                Long id,
 
-        Long timeCasaId,
-        String timeCasaNome,
+                Long timeCasaId,
+                String timeCasaNome,
 
-        Long timeVisitanteId,
-        String timeVisitanteNome,
+                Long timeVisitanteId,
+                String timeVisitanteNome,
 
-        Integer golsCasa,
-        Integer golsVisitante
-) {}
+                Integer golsCasa,
+                Integer golsVisitante) {
+}

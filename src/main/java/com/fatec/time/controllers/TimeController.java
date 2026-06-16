@@ -16,36 +16,36 @@ import com.fatec.time.services.TimeService;
 import jakarta.validation.Valid;
 
 // metodos http
-@RestController
+@CrossOrigin(origins = "*") // permite que o angular acesse a API
+@RestController // recebe requisições http e devolve respostas em json
 @RequestMapping("/times")
-@CrossOrigin(origins = "*")
 public class TimeController {
 
-    @Autowired
+    @Autowired // O Spring cria automaticamente um objeto TimeService.
     private TimeService service;
 
-    @GetMapping
+    @GetMapping // busca todos os times
     public ResponseEntity<List<TimeResponse>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{id}") // busca um time pelo id
     public ResponseEntity<TimeResponse> getById(@PathVariable Long id) {
         return ResponseEntity.ok(service.findById(id));
     }
 
-    @GetMapping("/ranking")
-    public List<Time> ranking() {
-        return service.ranking();
+    @GetMapping("/ranking") // busca todos os times em ordem de pontuação
+    public ResponseEntity<List<Time>> ranking() {
+        return ResponseEntity.ok(service.ranking());
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("{id}") // deleta um time pelo id
     public ResponseEntity<Void> deleteById(@PathVariable long id) {
         service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping
+    @PostMapping // insere um novo time
     public ResponseEntity<TimeResponse> save(@Valid @RequestBody TimeRequest request) {
 
         TimeResponse p = service.save(request);
@@ -60,7 +60,7 @@ public class TimeController {
 
     }
 
-    @PutMapping("{id}")
+    @PutMapping("{id}") // atualiza um time pelo id
     public ResponseEntity<Void> update(@PathVariable long id,
             @Valid @RequestBody TimeRequest request) {
         service.update(request, id);

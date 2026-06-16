@@ -12,8 +12,6 @@ public class TimeMapper {
 
         t.setNome(request.nome());
         t.setGrupo(request.grupo());
-        t.setPontos(request.pontos());
-
         return t;
     }
 
